@@ -69,7 +69,7 @@ def generate_pdf(data, filename, background_image, font_settings, y_start, line_
 st.title("Generador de constancias PUIC")
 
 # Input para que el usuario introduzca el texto delimitado por "|"
-st.markdown("### Introduce a los usuarios delimitado por '|', NO PUEDE HABER REGISTROS CON MISMO NOMBRE:")
+st.markdown("## 1. Introduce a los usuarios delimitado por '|', NO PUEDE HABER REGISTROS CON MISMO NOMBRE:")
 input_text = st.text_area("", height=200, value="""
 dirigido|nombre|por|actividad|eslogan|fecha
 a|Eduardo Melo Gómez|Por haber asistido a la|Ponencia: "Infancias Derechos e Interculturalidad" que se llevó a cabo el 21 de junio de 2024 en el marco del Seminario Permanente de Diversidad Cultural e Interculturalidad.|"POR MI RAZA HABLARÁ EL ESPÍRITU"|Ciudad Universitaria, Cd. Mx., a 07 agosto 2024
@@ -84,7 +84,7 @@ if input_text:
     st.dataframe(df)
 
     # Configuración dinámica de las fuentes basada en las columnas del DataFrame
-    st.markdown("## Configuración de fuentes para cada columna")
+    st.markdown("## 2. Configuración de fuentes para cada columna")
     font_settings = {}
     for column in df.columns:
         st.subheader(f"- Configuración de la columna: {column}")
@@ -111,7 +111,7 @@ y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", 
 line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.5, value=1.3, step=0.1)
 
 # Selectbox para que el usuario elija un valor entre 1, 2 o 3 para cargar imágenes adicionales
-st.markdown("### Seleccione el número de firmantes:")
+st.markdown("## Seleccione el número de firmantes:")
 selected_value = st.selectbox("", options=[1, 2, 3])
 
 # Cargar las imágenes adicionales según el valor seleccionado
