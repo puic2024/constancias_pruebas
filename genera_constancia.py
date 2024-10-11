@@ -7,7 +7,7 @@ import ast
 from io import StringIO
 from PIL import Image
 
-# Función para generar el PDF con las dimensiones de la imagen de fondo
+# Función para generar el PDF con una imagen de fondo, texto parametrizado y añadir imágenes adicionales con nombres centrados
 def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images):
     # Obtener las dimensiones de la imagen de fondo
     bg_image = Image.open(background_image)
@@ -29,17 +29,20 @@ def generate_pdf(data, filename, background_image, font_settings, y_start, line_
             pdf.set_text_color(*font_color)
             
             line_height = pdf.font_size * line_height_multiplier
-            text_width = bg_width * 0.75
+            text_width = bg_width * 0.75  # Ancho relativo para el texto (75% del ancho de la imagen)
             pdf.set_xy((bg_width - text_width) / 2, y_start)
             
+            # Contar el número de líneas que el texto ocupará
             lines = pdf.multi_cell(text_width, line_height, text, align='C', split_only=True)
             lines_count = len(lines)
             
+            # Dibujar el texto con salto de línea automático
             pdf.set_xy((bg_width - text_width) / 2, y_start)
             pdf.multi_cell(text_width, line_height, text, align='C')
             
             y_start += line_height * lines_count
     
+    # Distribuir las imágenes adicionales de manera uniforme y centrada
     if additional_images:
         image_width = 130
         image_height = 130
@@ -65,11 +68,43 @@ def generate_pdf(data, filename, background_image, font_settings, y_start, line_
 
     pdf.output(filename)
 
+# Función para crear archivos ZIP
+def create_zip(pdf_files, zip_filename):
+    with zipfile.ZipFile(zip_filename, 'w') as zipf:
+        for pdf_file in pdf_files:
+            zipf.write(pdf_file, os.path.basename(pdf_file))
+
 # Configuración de Streamlit
 st.title("Generador de constancias PUIC")
 
+# Mostrar la imagen "escudo.jpg" justo después del título con una reducción al 60% de su tamaño original
+escudo_image_path = "imagenes/escudo.jpg"
+if os.path.exists(escudo_image_path):
+    escudo_image = Image.open(escudo_image_path)
+    width, height = escudo_image.size
+    new_size = (int(width * 0.9), int(height * 0.9))
+    escudo_image_resized = escudo_image.resize(new_size)
+    st.image(escudo_image_resized, use_column_width=False)
+else:
+    st.error(f"La imagen {escudo_image_path} no existe.")
+
+# Cargar la imagen de fondo con valor predeterminado (después del título)
+st.markdown("### Cargar imagen de fondo:")
+background_image = st.file_uploader("", type=["png"], accept_multiple_files=False)
+if background_image is None:
+    background_image_path = "imagenes/background.png"
+else:
+    background_image_path = background_image.name
+    with open(background_image_path, "wb") as f:
+        f.write(background_image.read())
+
+# Previsualizar la imagen de fondo cargada o predeterminada
+image = Image.open(background_image_path)
+image = image.resize((330, 255))
+st.image(image, caption="Previsualización de la imagen de fondo", use_column_width=False)
+
 # Input para que el usuario introduzca el texto delimitado por "|"
-st.markdown("## 1. Introduce a los usuarios delimitado por '|', NO PUEDE HABER REGISTROS CON MISMO NOMBRE:")
+st.markdown("### Introduce a los usuarios delimitado por '|', NO PUEDE HABER REGISTROS CON MISMO NOMBRE:")
 input_text = st.text_area("", height=200, value="""
 dirigido|nombre|por|actividad|eslogan|fecha
 a|Eduardo Melo Gómez|Por haber asistido a la|Ponencia: "Infancias Derechos e Interculturalidad" que se llevó a cabo el 21 de junio de 2024 en el marco del Seminario Permanente de Diversidad Cultural e Interculturalidad.|"POR MI RAZA HABLARÁ EL ESPÍRITU"|Ciudad Universitaria, Cd. Mx., a 07 agosto 2024
@@ -84,10 +119,10 @@ if input_text:
     st.dataframe(df)
 
     # Configuración dinámica de las fuentes basada en las columnas del DataFrame
-    st.markdown("## 2. Configuración de fuentes para cada columna")
+    st.markdown("### Configuración de fuentes para cada columna")
     font_settings = {}
     for column in df.columns:
-        st.subheader(f"- Configuración de la columna: {column}")
+        st.subheader(f"Configuración de la columna: {column}")
         font_size = st.number_input(f"Tamaño de letra para '{column}':", min_value=1, value=35, step=1, key=f"size_{column}")
         font_type = st.selectbox(f"Tipo de letra para '{column}':", options=["Arial", "Courier", "Helvetica"], key=f"font_{column}")
         font_style = st.selectbox(f"Estilo de letra para '{column}':", options=["", "B", "I", "BI"], key=f"style_{column}")
@@ -111,7 +146,7 @@ y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", 
 line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.5, value=1.3, step=0.1)
 
 # Selectbox para que el usuario elija un valor entre 1, 2 o 3 para cargar imágenes adicionales
-st.markdown("## Seleccione el número de firmantes:")
+st.markdown("### Seleccione el número de firmantes:")
 selected_value = st.selectbox("", options=[1, 2, 3])
 
 # Cargar las imágenes adicionales según el valor seleccionado
@@ -131,13 +166,11 @@ if input_text and font_settings:
         for index, row in df.iterrows():
             data = row.to_dict()
             pdf_filename = f"{data['nombre']}.pdf"
-            generate_pdf(data, pdf_filename, "imagenes/background.png", font_settings, y_start_user, line_height_multiplier, uploaded_images)
+            generate_pdf(data, pdf_filename, background_image_path, font_settings, y_start_user, line_height_multiplier, uploaded_images)
             pdf_files.append(pdf_filename)
         
         zip_filename = "pdf_files.zip"
-        with zipfile.ZipFile(zip_filename, 'w') as zipf:
-            for pdf_file in pdf_files:
-                zipf.write(pdf_file, os.path.basename(pdf_file))
+        create_zip(pdf_files, zip_filename)
         
         with open(zip_filename, "rb") as f:
             bytes_data = f.read()
@@ -151,3 +184,5 @@ if input_text and font_settings:
         for pdf_file in pdf_files:
             os.remove(pdf_file)
         os.remove(zip_filename)
+        if background_image is not None:
+            os.remove(background_image_path)
