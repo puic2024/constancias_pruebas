@@ -6,6 +6,7 @@ import os
 import ast
 from io import StringIO
 from PIL import Image
+from pdf2image import convert_from_path
 
 # Función para generar el PDF con las dimensiones de la imagen de fondo
 def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images):
@@ -174,6 +175,17 @@ if input_text and font_settings_input:
         zip_filename = "pdf_files.zip"
         create_zip(pdf_files, zip_filename)
         
+        # Previsualizar el primer PDF generado
+        if pdf_files:
+            try:
+                first_pdf = pdf_files[0]
+                images = convert_from_path(first_pdf, dpi=200)
+                if images:
+                    st.image(images[0], caption="Vista previa del primer PDF", use_column_width=False)
+            except Exception as e:
+                st.error(f"Error al convertir el PDF a imagen: {e}")
+        
+        # Descargar el archivo ZIP
         with open(zip_filename, "rb") as f:
             bytes_data = f.read()
             st.download_button(
