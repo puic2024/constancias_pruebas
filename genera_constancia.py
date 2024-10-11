@@ -148,12 +148,12 @@ line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.
 
 # Selectbox para que el usuario elija un valor entre 1, 2 o 3 para cargar imágenes adicionales
 st.markdown("# 5. Seleccione el número de firmantes:")
-selected_value = st.selectbox("", options=[1, 2, 3])
+selected_value = st.selectbox("Número de firmantes:", options=[1, 2, 3])
 
 # Cargar las imágenes adicionales según el valor seleccionado
 uploaded_images = []
 for i in range(selected_value):
-    image = st.file_uploader(f"Cargar imagen adicional {i+1}", type=["png", "jpg", "jpeg"], key=f"additional_image_uploader_{i}")
+    image = st.file_uploader(f"Cargar firma {i+1}", type=["png", "jpg", "jpeg"], key=f"additional_image_uploader_{i}")
     if image:
         image_path = image.name
         with open(image_path, "wb") as f:
