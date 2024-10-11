@@ -89,7 +89,7 @@ else:
     st.error(f"La imagen {escudo_image_path} no existe.")
 
 # Cargar la imagen de fondo con valor predeterminado (después del título)
-st.markdown("### Cargar imagen de fondo:")
+st.markdown("# 1. Cargar imagen de fondo:")
 background_image = st.file_uploader("", type=["png"], accept_multiple_files=False)
 if background_image is None:
     background_image_path = "imagenes/background.png"
@@ -104,7 +104,7 @@ image = image.resize((330, 255))
 st.image(image, caption="Previsualización de la imagen de fondo", use_column_width=False)
 
 # Input para que el usuario introduzca el texto delimitado por "|"
-st.markdown("### Introduce a los usuarios delimitado por '|', NO PUEDE HABER REGISTROS CON MISMO NOMBRE:")
+st.markdown("# 2. Introduce a los usuarios delimitado por '|', NO PUEDE HABER REGISTROS CON MISMO NOMBRE:")
 input_text = st.text_area("", height=200, value="""
 dirigido|nombre|por|actividad|eslogan|fecha
 a|Eduardo Melo Gómez|Por haber asistido a la|Ponencia: "Infancias Derechos e Interculturalidad" que se llevó a cabo el 21 de junio de 2024 en el marco del Seminario Permanente de Diversidad Cultural e Interculturalidad.|"POR MI RAZA HABLARÁ EL ESPÍRITU"|Ciudad Universitaria, Cd. Mx., a 07 agosto 2024
@@ -119,7 +119,7 @@ if input_text:
     st.dataframe(df)
 
     # Configuración dinámica de las fuentes basada en las columnas del DataFrame
-    st.markdown("### Configuración de fuentes para cada columna")
+    st.markdown("# 3. Configuración de fuentes para cada columna")
     font_settings = {}
     for column in df.columns:
         st.subheader(f"Configuración de la columna: {column}")
@@ -140,13 +140,14 @@ if input_text:
         }
 
 # Input para que el usuario defina la altura inicial del texto
+st.markdown("# 4. Altura e interlineado del texto")
 y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", min_value=0, value=460)
 
 # Input para que el usuario defina el valor del interlineado
 line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.5, value=1.3, step=0.1)
 
 # Selectbox para que el usuario elija un valor entre 1, 2 o 3 para cargar imágenes adicionales
-st.markdown("### Seleccione el número de firmantes:")
+st.markdown("# 5. Seleccione el número de firmantes:")
 selected_value = st.selectbox("", options=[1, 2, 3])
 
 # Cargar las imágenes adicionales según el valor seleccionado
