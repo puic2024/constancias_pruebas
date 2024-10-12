@@ -3,7 +3,6 @@ import pandas as pd
 from fpdf import FPDF
 import zipfile
 import os
-import ast
 from io import StringIO
 from PIL import Image
 
@@ -103,18 +102,11 @@ image = Image.open(background_image_path)
 image = image.resize((330, 255))
 st.image(image, caption="Previsualización de la imagen de fondo", use_column_width=False)
 
-# Input para que el usuario introduzca el texto delimitado por "|"
-st.markdown("# 2. Introduce a los usuarios delimitado por '|', NO PUEDE HABER REGISTROS CON MISMO NOMBRE:")
-input_text = st.text_area("", height=200, value="""
-dirigido|nombre|por|actividad|eslogan|fecha
-a|Eduardo Melo Gómez|Por haber asistido a la|Ponencia: "Infancias Derechos e Interculturalidad" que se llevó a cabo el 21 de junio de 2024 en el marco del Seminario Permanente de Diversidad Cultural e Interculturalidad.|"POR MI RAZA HABLARÁ EL ESPÍRITU"|Ciudad Universitaria, Cd. Mx., a 07 agosto 2024
-a|José Eduardo Rendón Lezama|Por haber asistido a la|Ponencia: "Infancias Derechos e Interculturalidad" que se llevó a cabo el 21 de junio de 2024 en el marco del Seminario Permanente de Diversidad Cultural e Interculturalidad.|"POR MI RAZA HABLARÁ EL ESPÍRITU"|Ciudad Universitaria, Cd. Mx., a 07 agosto 2024
-""")
-
-# Convertir el texto en un DataFrame
-if input_text:
-    input_data = StringIO(input_text)
-    df = pd.read_csv(input_data, sep="|", quotechar='~')
+# Cargar un archivo CSV
+st.markdown("# 2. Cargar archivo CSV con datos:")
+uploaded_file = st.file_uploader("Elige un archivo CSV", type=["csv"])
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
     st.write("Previsualización de la información:")
     st.dataframe(df)
 
@@ -161,7 +153,7 @@ for i in range(selected_value):
         uploaded_images.append(image_path)
 
 # Botón para generar PDFs
-if input_text and font_settings:
+if uploaded_file and font_settings:
     if st.button("Generar PDFs"):
         pdf_files = []
         for index, row in df.iterrows():
