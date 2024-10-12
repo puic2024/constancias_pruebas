@@ -123,7 +123,7 @@ if input_text:
     font_settings = {}
     for column in df.columns:
         st.subheader(f"- Configuración de la columna: {column}")
-        font_size = st.number_input(f"Tamaño de letra para '{column}':", min_value=1, value=35, step=1, key=f"size_{column}")
+        font_size = st.number_input(f"Tamaño de letra para '{column}':", min_value=1, value=30, step=1, key=f"size_{column}")
         font_type = st.selectbox(f"Tipo de letra para '{column}':", options=["Arial", "Courier", "Helvetica"], key=f"font_{column}")
         font_style = st.selectbox(f"Estilo de letra para '{column}':", options=["", "B", "I", "BI"], key=f"style_{column}")
         font_color = st.color_picker(f"Color de letra para '{column}':", value='#000000', key=f"color_{column}")
@@ -141,7 +141,7 @@ if input_text:
 
 # Input para que el usuario defina la altura inicial del texto
 st.markdown("# 4. Altura e interlineado del texto")
-y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", min_value=0, value=460)
+y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", min_value=0, value=290)
 
 # Input para que el usuario defina el valor del interlineado
 line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.5, value=1.3, step=0.1)
