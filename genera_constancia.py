@@ -152,10 +152,9 @@ for i in range(selected_value):
             f.write(image.read())
         uploaded_images.append(image_path)
 
-# Botón para definir el porcentaje de dimensiones de las imágenes adicionales
-if uploaded_images:
-    if st.button("Definir porcentaje de tamaño de las imágenes"):
-        image_scale = st.slider("Porcentaje de tamaño de las imágenes adicionales:", min_value=1, max_value=100, value=100)
+# Slider para definir el porcentaje de tamaño de las imágenes adicionales
+st.markdown("# 6. Porcentaje de tamaño de las imágenes adicionales:")
+image_scale = st.slider("Ajusta el porcentaje de las dimensiones de las imágenes adicionales:", min_value=1, max_value=100, value=100)
 
 # Botón para generar PDFs
 if uploaded_file and font_settings and uploaded_images:
