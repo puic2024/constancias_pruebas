@@ -158,7 +158,7 @@ image_scale = st.slider("Ajusta el porcentaje de las dimensiones de las imágene
 
 # Input para definir el tamaño del texto de las imágenes adicionales
 st.markdown("### Tamaño del texto de las imágenes adicionales:")
-text_size = st.number_input("Tamaño del texto para las imágenes adicionales:", min_value=1, value=30, step=1)
+text_size = st.number_input("Tamaño del texto para las imágenes adicionales:", min_value=1, value=20, step=1)
 
 # Botón para generar PDFs
 if uploaded_file and font_settings and uploaded_images:
