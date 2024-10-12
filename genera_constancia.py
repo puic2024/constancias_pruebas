@@ -139,7 +139,7 @@ y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", 
 line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.5, value=1.3, step=0.1)
 
 # Selectbox para que el usuario elija un valor entre 1, 2 o 3 para cargar imágenes adicionales
-st.markdown("# 5. Seleccione el número de firmantes:")
+st.markdown("# 5. Seleccione el número de firmantes: (el nombre de los firmantes debe ser sin acentos)")
 selected_value = st.selectbox("Número de firmantes:", options=[1, 2, 3])
 
 # Cargar las imágenes adicionales según el valor seleccionado
