@@ -157,7 +157,7 @@ st.markdown("### Porcentaje de tamaño de las firmas (QR):")
 image_scale = st.slider("Ajusta el porcentaje de las dimensiones de las imágenes adicionales:", min_value=1, max_value=100, value=100)
 
 # Input para definir el tamaño del texto de las imágenes adicionales
-st.markdown("### Tamaño del texto de las imágenes adicionales:")
+st.markdown("### Tamaño del texto de las firmas:")
 text_size = st.number_input("Tamaño del texto para las imágenes adicionales:", min_value=1, value=20, step=1)
 
 # Botón para generar PDFs
