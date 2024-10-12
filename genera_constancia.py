@@ -7,7 +7,7 @@ from io import StringIO
 from PIL import Image
 
 # Función para generar el PDF con una imagen de fondo, texto parametrizado y añadir imágenes adicionales con nombres centrados
-def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images, image_scale):
+def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images, image_scale, text_size):
     # Obtener las dimensiones de la imagen de fondo
     bg_image = Image.open(background_image)
     bg_width, bg_height = bg_image.size
@@ -55,7 +55,7 @@ def generate_pdf(data, filename, background_image, font_settings, y_start, line_
                     pdf.image(image_path, x=x_position, y=y_position, w=image_width, h=image_height)
                     
                     image_name = os.path.splitext(os.path.basename(image_path))[0]
-                    pdf.set_font("Arial", size=30)
+                    pdf.set_font("Arial", size=text_size)
                     pdf.set_text_color(0, 0, 0)
                     text_width = pdf.get_string_width(image_name)
                     pdf.set_xy(x_position + (image_width - text_width) / 2, y_position + image_height + 20)
@@ -156,6 +156,10 @@ for i in range(selected_value):
 st.markdown("# 6. Porcentaje de tamaño de las imágenes adicionales:")
 image_scale = st.slider("Ajusta el porcentaje de las dimensiones de las imágenes adicionales:", min_value=1, max_value=100, value=100)
 
+# Input para definir el tamaño del texto de las imágenes adicionales
+st.markdown("# 7. Tamaño del texto de las imágenes adicionales:")
+text_size = st.number_input("Tamaño del texto para las imágenes adicionales:", min_value=1, value=30, step=1)
+
 # Botón para generar PDFs
 if uploaded_file and font_settings and uploaded_images:
     if st.button("Generar PDFs"):
@@ -163,7 +167,7 @@ if uploaded_file and font_settings and uploaded_images:
         for index, row in df.iterrows():
             data = row.to_dict()
             pdf_filename = f"{data['nombre']}.pdf"
-            generate_pdf(data, pdf_filename, background_image_path, font_settings, y_start_user, line_height_multiplier, uploaded_images, image_scale)
+            generate_pdf(data, pdf_filename, background_image_path, font_settings, y_start_user, line_height_multiplier, uploaded_images, image_scale, text_size)
             pdf_files.append(pdf_filename)
         
         zip_filename = "pdf_files.zip"
