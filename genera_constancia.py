@@ -141,7 +141,7 @@ if input_text:
 
 # Input para que el usuario defina la altura inicial del texto
 st.markdown("# 4. Altura e interlineado del texto")
-y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", min_value=0, value=250)
+y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", min_value=0, value=260)
 
 # Input para que el usuario defina el valor del interlineado
 line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.5, value=1.3, step=0.1)
