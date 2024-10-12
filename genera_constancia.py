@@ -153,11 +153,11 @@ for i in range(selected_value):
         uploaded_images.append(image_path)
 
 # Slider para definir el porcentaje de tamaño de las imágenes adicionales
-st.markdown("# 6. Porcentaje de tamaño de las imágenes adicionales:")
+st.markdown("### Porcentaje de tamaño de las firmas (QR):")
 image_scale = st.slider("Ajusta el porcentaje de las dimensiones de las imágenes adicionales:", min_value=1, max_value=100, value=100)
 
 # Input para definir el tamaño del texto de las imágenes adicionales
-st.markdown("# 7. Tamaño del texto de las imágenes adicionales:")
+st.markdown("### Tamaño del texto de las imágenes adicionales:")
 text_size = st.number_input("Tamaño del texto para las imágenes adicionales:", min_value=1, value=30, step=1)
 
 # Botón para generar PDFs
