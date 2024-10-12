@@ -7,7 +7,7 @@ from io import StringIO
 from PIL import Image
 
 # Función para generar el PDF con una imagen de fondo, texto parametrizado y añadir imágenes adicionales con nombres centrados
-def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images):
+def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images, image_scale):
     # Obtener las dimensiones de la imagen de fondo
     bg_image = Image.open(background_image)
     bg_width, bg_height = bg_image.size
@@ -43,8 +43,8 @@ def generate_pdf(data, filename, background_image, font_settings, y_start, line_
     
     # Distribuir las imágenes adicionales de manera uniforme y centrada
     if additional_images:
-        image_width = 130
-        image_height = 130
+        image_width = 130 * (image_scale / 100)
+        image_height = 130 * (image_scale / 100)
         spacing = (bg_width - (image_width * len(additional_images))) / (len(additional_images) + 1)
         y_position = y_start + 20
 
@@ -152,14 +152,19 @@ for i in range(selected_value):
             f.write(image.read())
         uploaded_images.append(image_path)
 
+# Botón para definir el porcentaje de dimensiones de las imágenes adicionales
+if uploaded_images:
+    if st.button("Definir porcentaje de tamaño de las imágenes"):
+        image_scale = st.slider("Porcentaje de tamaño de las imágenes adicionales:", min_value=1, max_value=100, value=100)
+
 # Botón para generar PDFs
-if uploaded_file and font_settings:
+if uploaded_file and font_settings and uploaded_images:
     if st.button("Generar PDFs"):
         pdf_files = []
         for index, row in df.iterrows():
             data = row.to_dict()
             pdf_filename = f"{data['nombre']}.pdf"
-            generate_pdf(data, pdf_filename, background_image_path, font_settings, y_start_user, line_height_multiplier, uploaded_images)
+            generate_pdf(data, pdf_filename, background_image_path, font_settings, y_start_user, line_height_multiplier, uploaded_images, image_scale)
             pdf_files.append(pdf_filename)
         
         zip_filename = "pdf_files.zip"
