@@ -7,7 +7,7 @@ from io import StringIO
 from PIL import Image
 
 # Función para generar el PDF con una imagen de fondo, texto parametrizado y añadir imágenes adicionales con nombres centrados
-def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images, image_scale, text_size):
+def generate_pdf(data, filename, background_image, font_settings, y_start, line_height_multiplier, additional_images, image_texts, image_scale, text_size):
     # Obtener las dimensiones de la imagen de fondo
     bg_image = Image.open(background_image)
     bg_width, bg_height = bg_image.size
@@ -16,6 +16,7 @@ def generate_pdf(data, filename, background_image, font_settings, y_start, line_
     pdf.add_page()
     pdf.image(background_image, x=0, y=0, w=bg_width, h=bg_height)
     
+    # Agregar texto parametrizado
     for key, value in data.items():
         if key in font_settings:
             text = str(value)
@@ -41,25 +42,24 @@ def generate_pdf(data, filename, background_image, font_settings, y_start, line_
             
             y_start += line_height * lines_count
     
-    # Distribuir las imágenes adicionales de manera uniforme y centrada
+    # Distribuir las imágenes adicionales de manera uniforme y centrada con el texto especificado por el usuario
     if additional_images:
         image_width = 130 * (image_scale / 100)
         image_height = 130 * (image_scale / 100)
         spacing = (bg_width - (image_width * len(additional_images))) / (len(additional_images) + 1)
         y_position = y_start + 20
 
-        for i, image_path in enumerate(additional_images):
+        for i, (image_path, image_text) in enumerate(zip(additional_images, image_texts)):
             if os.path.exists(image_path):
                 try:
                     x_position = spacing + i * (image_width + spacing)
                     pdf.image(image_path, x=x_position, y=y_position, w=image_width, h=image_height)
                     
-                    image_name = os.path.splitext(os.path.basename(image_path))[0]
                     pdf.set_font("Arial", size=text_size)
                     pdf.set_text_color(0, 0, 0)
-                    text_width = pdf.get_string_width(image_name)
+                    text_width = pdf.get_string_width(image_text)
                     pdf.set_xy(x_position + (image_width - text_width) / 2, y_position + image_height + 20)
-                    pdf.cell(text_width, 10, image_name, align='C')
+                    pdf.cell(text_width, 10, image_text, align='C')
                 except RuntimeError as e:
                     st.error(f"No se pudo cargar la imagen {image_path}. Error: {e}")
             else:
@@ -87,7 +87,7 @@ if os.path.exists(escudo_image_path):
 else:
     st.error(f"La imagen {escudo_image_path} no existe.")
 
-# Cargar la imagen de fondo con valor predeterminado (después del título)
+# Cargar la imagen de fondo con valor predeterminado
 st.markdown("# 1. Cargar imagen de fondo:")
 background_image = st.file_uploader("", type=["png"], accept_multiple_files=False)
 if background_image is None:
@@ -142,15 +142,23 @@ line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.
 st.markdown("# 5. Seleccione el número de firmantes: (el nombre de los firmantes debe ser sin acentos)")
 selected_value = st.selectbox("Número de firmantes:", options=[1, 2, 3])
 
-# Cargar las imágenes adicionales según el valor seleccionado
+# Cargar las imágenes adicionales y el texto debajo de cada imagen
 uploaded_images = []
+image_texts = []  # Lista para almacenar los textos debajo de cada imagen
 for i in range(selected_value):
+    # Uploader para cada imagen adicional
     image = st.file_uploader(f"Cargar firma {i+1} (sin acentos)", type=["png", "jpg", "jpeg"], key=f"additional_image_uploader_{i}")
+    
+    # Text input para el texto debajo de la imagen adicional
     if image:
         image_path = image.name
         with open(image_path, "wb") as f:
             f.write(image.read())
         uploaded_images.append(image_path)
+        
+        # Campo de texto para el texto personalizado
+        image_text = st.text_input(f"Texto debajo de la firma {i+1}:", key=f"additional_image_text_{i}")
+        image_texts.append(image_text)  # Agregar el texto a la lista
 
 # Slider para definir el porcentaje de tamaño de las imágenes adicionales
 st.markdown("### Porcentaje de tamaño de las firmas (QR):")
@@ -167,7 +175,7 @@ if uploaded_file and font_settings and uploaded_images:
         for index, row in df.iterrows():
             data = row.to_dict()
             pdf_filename = f"{data['nombre']}.pdf"
-            generate_pdf(data, pdf_filename, background_image_path, font_settings, y_start_user, line_height_multiplier, uploaded_images, image_scale, text_size)
+            generate_pdf(data, pdf_filename, background_image_path, font_settings, y_start_user, line_height_multiplier, uploaded_images, image_texts, image_scale, text_size)
             pdf_files.append(pdf_filename)
         
         zip_filename = "pdf_files.zip"
