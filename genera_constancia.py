@@ -168,6 +168,22 @@ image_scale = st.slider("Ajusta el porcentaje de las dimensiones de las imágene
 st.markdown("### Tamaño del texto de las firmas:")
 text_size = st.number_input("Tamaño del texto para las imágenes adicionales:", min_value=1, value=20, step=1)
 
+# Botón para guardar configuración en archivo TXT
+if st.button("Guardar configuración en TXT"):
+    with open("configuracion_usuario.txt", "w") as f:
+        f.write(f"Altura inicial del texto: {y_start_user}\n")
+        f.write(f"Interlineado: {line_height_multiplier}\n")
+        f.write(f"Porcentaje de tamaño de las imágenes adicionales: {image_scale}\n")
+        f.write(f"Tamaño del texto de las imágenes adicionales: {text_size}\n")
+        f.write("Configuración de fuentes por columna:\n")
+        for column, settings in font_settings.items():
+            f.write(f"  Columna '{column}': {settings}\n")
+        f.write("Textos de imágenes adicionales:\n")
+        for i, text in enumerate(image_texts, 1):
+            f.write(f"  Texto para firma {i}: {text}\n")
+    with open("configuracion_usuario.txt", "rb") as file:
+        st.download_button("Descargar configuración", file, "configuracion_usuario.txt", mime="text/plain")
+
 # Botón para generar PDFs
 if uploaded_file and font_settings and uploaded_images:
     if st.button("Generar PDFs"):
