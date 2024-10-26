@@ -139,7 +139,7 @@ y_start_user = st.number_input("Altura en donde empezará el texto (pixeles):", 
 line_height_multiplier = st.number_input("Valor del interlineado:", min_value=0.5, value=1.3, step=0.1)
 
 # Selectbox para que el usuario elija un valor entre 1, 2 o 3 para cargar imágenes adicionales
-st.markdown("# 5. Seleccione el número de firmantes:")
+st.markdown("# 5. Seleccione el número de firmantes: (el nombre de los firmantes debe ser sin acentos)")
 selected_value = st.selectbox("Número de firmantes:", options=[1, 2, 3])
 
 # Cargar las imágenes adicionales y el texto debajo de cada imagen
@@ -147,7 +147,7 @@ uploaded_images = []
 image_texts = []  # Lista para almacenar los textos debajo de cada imagen
 for i in range(selected_value):
     # Uploader para cada imagen adicional
-    image = st.file_uploader(f"Cargar firma {i+1}", type=["png", "jpg", "jpeg"], key=f"additional_image_uploader_{i}")
+    image = st.file_uploader(f"Cargar firma {i+1} (sin acentos)", type=["png", "jpg", "jpeg"], key=f"additional_image_uploader_{i}")
     
     # Text input para el texto debajo de la imagen adicional
     if image:
@@ -167,22 +167,6 @@ image_scale = st.slider("Ajusta el porcentaje de las dimensiones de las imágene
 # Input para definir el tamaño del texto de las imágenes adicionales
 st.markdown("### Tamaño del texto de las firmas:")
 text_size = st.number_input("Tamaño del texto para las imágenes adicionales:", min_value=1, value=20, step=1)
-
-# Botón para guardar configuración en archivo TXT
-if st.button("Generar configuración en TXT"):
-    with open("configuracion_usuario.txt", "w") as f:
-        f.write(f"Altura inicial del texto: {y_start_user}\n")
-        f.write(f"Interlineado: {line_height_multiplier}\n")
-        f.write(f"Porcentaje de tamaño de las imágenes adicionales: {image_scale}\n")
-        f.write(f"Tamaño del texto de las imágenes adicionales: {text_size}\n")
-        f.write("Configuración de fuentes por columna:\n")
-        for column, settings in font_settings.items():
-            f.write(f"  Columna '{column}': {settings}\n")
-        f.write("Textos de imágenes adicionales:\n")
-        for i, text in enumerate(image_texts, 1):
-            f.write(f"  Texto para firma {i}: {text}\n")
-    with open("configuracion_usuario.txt", "rb") as file:
-        st.download_button("Descargar configuración", file, "configuracion_usuario.txt", mime="text/plain")
 
 # Botón para generar PDFs
 if uploaded_file and font_settings and uploaded_images:
@@ -211,3 +195,19 @@ if uploaded_file and font_settings and uploaded_images:
         os.remove(zip_filename)
         if background_image is not None:
             os.remove(background_image_path)
+
+# Botón para guardar configuración en archivo TXT
+if st.button("Guardar configuración en TXT"):
+    with open("configuracion_usuario.txt", "w") as f:
+        f.write(f"Altura inicial del texto: {y_start_user}\n")
+        f.write(f"Interlineado: {line_height_multiplier}\n")
+        f.write(f"Porcentaje de tamaño de las imágenes adicionales: {image_scale}\n")
+        f.write(f"Tamaño del texto de las imágenes adicionales: {text_size}\n")
+        f.write("Configuración de fuentes por columna:\n")
+        for column, settings in font_settings.items():
+            f.write(f"  Columna '{column}': {settings}\n")
+        f.write("Textos de imágenes adicionales:\n")
+        for i, text in enumerate(image_texts, 1):
+            f.write(f"  Texto para firma {i}: {text}\n")
+    with open("configuracion_usuario.txt", "rb") as file:
+        st.download_button("Descargar configuración", file, "configuracion_usuario.txt", mime="text/plain")
